@@ -124,7 +124,7 @@ COPY --chown=mongodb:mongodb .docker/mongodb/file.key /auth/
 #RUN sudo id -u docker | xargs -I{} chown -R 999:999 /auth/file.key
 #USER mongodb
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint.sh", ">>", "/var/log/mongodb.log"]
 
 EXPOSE 27017
 CMD ["mongod"]

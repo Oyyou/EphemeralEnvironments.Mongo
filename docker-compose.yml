@@ -24,7 +24,7 @@ services:
     container_name: "ee.mongo"
     build: .
     restart: 'on-failure'
-    command: ["-f", "/etc/mongod.conf", "--port", "27777", "--keyFile", "/auth/file.key", "--replSet", "${MONGO_REPLICA_SET_NAME}", "--bind_ip_all"]
+    command: ["-f", "/etc/mongod.conf", "--port", "27777", "--keyFile", "/auth/file.key", "--replSet", "${MONGO_REPLICA_SET_NAME}", "--bind_ip_all", "--verbose"]
     expose:
       - 27777
     ports:
