@@ -40,6 +40,10 @@ services:
       # - ./scripts/init-mongo.sh:/scripts/init-mongo.sh
     env_file:
       - .env
+    healthcheck:
+        test: echo 'rs.status().ok' | mongo admin -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet | grep 1
+        interval: 30s
+        start_period: 60s
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
