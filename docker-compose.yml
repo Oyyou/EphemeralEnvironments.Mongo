@@ -1,57 +1,27 @@
-version: '3.9'
+version: '3.8'
 
 services:
-
-  ee.mongo.replica.setup:
-    container_name: ee.mongo.replica.setup
-    build: .
-    restart: on-failure
-    networks:
-      - ee_net
-    volumes:
-    - ./.docker/mongodb/scripts/mongosetup.sh:/scripts/mongosetup.sh
-    entrypoint: ["bash", "/scripts/mongosetup.sh" ]
-    env_file:
-      - .env
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-    depends_on:
-      - ee.mongo
-
   ee.mongo:
-    hostname: "ee.mongo"
-    container_name: "ee.mongo"
-    build: .
-    restart: 'on-failure'
-    command: ["-f", "/etc/mongod.conf", "--port", "27777", "--keyFile", "/auth/file.key", "--replSet", "${MONGO_REPLICA_SET_NAME}", "--bind_ip_all", "--verbose"]
+    image: mongo:4.2
+    container_name: ee.mongo
+    ports:
+      - "27777:27017"
     expose:
       - 27777
-    ports:
-      - "27777:27777"
     networks:
       - ee_net
-    volumes:
-      - mongoData:/data/db
-      - ./.docker/mongodb/initdb.d/usercreate.sh:/docker-entrypoint-initdb.d/usercreate.sh:ro
-      - ./.docker/mongodb/mongod.conf:/etc/mongod.conf
-      # - ./file.key:/data/file.key
-      # - ./mongod.conf:/etc/mongod.conf
-      # - ./scripts/init-mongo.sh:/scripts/init-mongo.sh
     env_file:
       - .env
-    healthcheck:
-        test: echo 'rs.status().ok' | mongo admin -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet | grep 1
-        interval: 30s
-        start_period: 60s
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    # entrypoint: ["bash", "/scripts/init-mongo.sh"]
+    volumes:
+      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+      - mongodb-data:/data/db
 
-volumes: 
-    mongoData:
+volumes:
+  mongodb-data:
 
 networks:
   ee_net:
