@@ -1,6 +1,13 @@
 #!/bin/bash
 
 set -Eeuo pipefail
+
+# Remove the lock file if it exists
+if [ -f /data/db/mongod.lock ]; then
+    echo "Removing mongod.lock file..."
+    rm /data/db/mongod.lock
+fi
+
 echo "User Init Script is entered"
 mongo -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin "$MONGO_INITDB_DATABASE" <<EOF
     db.createUser({
